@@ -2,6 +2,7 @@
 import { cursorTo, cursorBackward, eraseScreen } from 'ansi-escapes';
 import chalk from 'chalk';
 import { Chess } from './lib/chess.js';
+import { isWhite } from './lib/moves.js';
 
 // console.log('asd');
 
@@ -15,27 +16,27 @@ const write = process.stdout.write.bind(process.stdout);
 write(eraseScreen);
 
 const FIGURES = {
-    PAWN: { WHITE: '♙', BLACK: '♟' },
-    KING: { WHITE: '♔', BLACK: '♚' },
-    QUEEN: { WHITE: '♕', BLACK: '♛' },
-    ROOK: { WHITE: '♖', BLACK: '♜' },
-    BISHOP: { WHITE: '♗', BLACK: '♝' },
-    KNIGHT: { WHITE: '♘', BLACK: '♞' },
+    PAWN: { BLACK: '♙', WHITE: '♟' },
+    KING: { BLACK: '♔', WHITE: '♚' },
+    QUEEN: { BLACK: '♕', WHITE: '♛' },
+    ROOK: { BLACK: '♖', WHITE: '♜' },
+    BISHOP: { BLACK: '♗', WHITE: '♝' },
+    KNIGHT: { BLACK: '♘', WHITE: '♞' },
 };
 
 const BY_CODE = {
-    'r': FIGURES.ROOK.WHITE,
-    'n': FIGURES.KNIGHT.WHITE,
-    'b': FIGURES.BISHOP.WHITE,
-    'q': FIGURES.QUEEN.WHITE,
-    'k': FIGURES.KING.WHITE,
-    'p': FIGURES.PAWN.WHITE,
-    'R': FIGURES.ROOK.BLACK,
-    'N': FIGURES.KNIGHT.BLACK,
-    'B': FIGURES.BISHOP.BLACK,
-    'Q': FIGURES.QUEEN.BLACK,
-    'K': FIGURES.KING.BLACK,
-    'P': FIGURES.PAWN.BLACK,
+    'r': FIGURES.ROOK.BLACK,
+    'n': FIGURES.KNIGHT.BLACK,
+    'b': FIGURES.BISHOP.BLACK,
+    'q': FIGURES.QUEEN.BLACK,
+    'k': FIGURES.KING.BLACK,
+    'p': FIGURES.PAWN.BLACK,
+    'R': FIGURES.ROOK.WHITE,
+    'N': FIGURES.KNIGHT.WHITE,
+    'B': FIGURES.BISHOP.WHITE,
+    'Q': FIGURES.QUEEN.WHITE,
+    'K': FIGURES.KING.WHITE,
+    'P': FIGURES.PAWN.WHITE,
 };
 
 const draw_chessboard = (x, y, chess) => {
@@ -45,13 +46,15 @@ const draw_chessboard = (x, y, chess) => {
         write(cursorTo(x, y));
 
         for (let x = 0; x < 8; ++x) {
-            const color = ['bgWhite', 'bgBlack'][(x + y) % 2];
+            const bg = ['bgWhite', 'bgBlack'][(x + y) % 2];
+            
 
             const piece = chess.find({ x, y });
+            const color = piece && isWhite(piece) ? 'white' : 'black';
             // console.log(piece.code)
             const character = piece ? BY_CODE[piece.code] : ' ';
 
-            write(chalk[color](` ${character} `));
+            write(chalk[bg][color](` ${character} `));
         }
 
         write('\n');
